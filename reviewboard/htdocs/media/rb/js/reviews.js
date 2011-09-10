@@ -938,20 +938,22 @@ $.fn.commentDlg = function() {
             if ($(this).val() == '') {
                 $(this).val(0);
             }
+            self.setDirty(true);
+            saveButton.attr("disabled", false);
         });
 
     var subtractButton = $("#comment_subtract", draftForm)
         .click(function() {
             pointsField.val(Number(pointsField.val()) + 1);
             self.setDirty(true);
-            saveButton.attr("disabled", textField.val() == "");
+            saveButton.attr("disabled", false);
         });
 
     var resetPtsButton = $("#comment_resetpts", draftForm)
         .click(function() {
             pointsField.val(0); 
             self.setDirty(true);
-            saveButton.attr("disabled", textField.val() == "");
+            saveButton.attr("disabled", false) == "");
         });
 
     var textField    = $("#comment_text", draftForm)

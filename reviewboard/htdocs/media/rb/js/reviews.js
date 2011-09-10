@@ -1140,6 +1140,7 @@ $.fn.commentDlg = function() {
     this.close = function() {
         if (self.is(":visible")) {
             textField.val("");
+	    pointsField.val(0);
             issueField.attr("checked", false)
 
             self

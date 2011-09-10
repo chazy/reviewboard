@@ -222,6 +222,7 @@ $.extend(DiffCommentBlock.prototype, {
             if (this.draftComment.points_deducted > 0)
                 _tmp_cmt_text = ' [-' + this.draftComment.points_deducted + ']';
 
+	    alert("huja: " + this.draftComment.text.truncate());
             $("<li/>")
                 .text(this.draftComment.text.truncate() + _tmp_cmt_text)
                 .addClass("draft")
@@ -232,6 +233,7 @@ $.extend(DiffCommentBlock.prototype, {
             var _tmp_cmt_text = '';
             if (this.comments[i].points_deducted > 0)
                 _tmp_cmt_text = ' [-' + this.comments[i].points_deducted + ']';
+	    alert("haju: " + this.comments[i].text.truncate());
             $("<li/>")
                 .text(this.comments[i].text.truncate() + _tmp_cmt_text)
                 .appendTo(list);

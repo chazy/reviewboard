@@ -37,7 +37,8 @@ function CommentBlock(x, y, width, height, container, comments) {
             var comment = comments[i];
 
             if (comment.localdraft) {
-                this._createDraftComment(comment.comment_id, comment.text);
+                this._createDraftComment(comment.comment_id, comment.text,
+					 comment.points_deducted);
             } else {
                 this.comments.push(comment);
             }

@@ -159,7 +159,8 @@ function DiffCommentBlock(beginRow, endRow, beginLineNum, endLineNum,
             var comment = comments[i];
 
             if (comment.localdraft) {
-                this._createDraftComment(comment.comment_id, comment.text);
+                this._createDraftComment(comment.comment_id, comment.text,
+					 comment.points_deducted);
             } else {
                 this.comments.push(comment);
             }
@@ -222,7 +223,6 @@ $.extend(DiffCommentBlock.prototype, {
             if (this.draftComment.points_deducted > 0)
                 _tmp_cmt_text = ' [-' + this.draftComment.points_deducted + ']';
 
-	    alert("huja: " + this.draftComment.text.truncate());
             $("<li/>")
                 .text(this.draftComment.text.truncate() + _tmp_cmt_text)
                 .addClass("draft")
@@ -233,7 +233,6 @@ $.extend(DiffCommentBlock.prototype, {
             var _tmp_cmt_text = '';
             if (this.comments[i].points_deducted > 0)
                 _tmp_cmt_text = ' [-' + this.comments[i].points_deducted + ']';
-	    alert("haju: " + this.comments[i].text.truncate());
             $("<li/>")
                 .text(this.comments[i].text.truncate() + _tmp_cmt_text)
                 .appendTo(list);
@@ -297,7 +296,7 @@ $.extend(DiffCommentBlock.prototype, {
             .close();
     },
 
-    _createDraftComment: function(id, text) {
+    _createDraftComment: function(id, text, points_deducted) {
         if (this.draftComment != null) {
             return;
         }
@@ -311,6 +310,7 @@ $.extend(DiffCommentBlock.prototype, {
         if (text) {
             comment.text = text;
         }
+	comment.points_deducted = points_deducted;
 
         $.event.add(comment, "textChanged", function() {
             self.updateTooltip();

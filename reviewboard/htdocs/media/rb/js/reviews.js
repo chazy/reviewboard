@@ -919,7 +919,7 @@ $.fn.commentDlg = function() {
     var saveButton = $("#comment_save", this)
         .click(function() {
             comment.setText(textField.val());
-            comment.points_deducted += Number(pointsField.val());
+            comment.points_deducted = Number(pointsField.val());
             comment.issue_opened = issueField.attr('checked') ? 1 : 0;
             comment.save();
             self.close();

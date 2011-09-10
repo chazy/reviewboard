@@ -517,8 +517,9 @@ class ReviewRequest(models.Model):
 
     def is_mutable_by(self, user):
         "Returns true if the user can modify this review request"
-        return self.submitter == user or \
-               user.has_perm('reviews.can_edit_reviewrequest')
+        #return self.submitter == user or \
+        #       user.has_perm('reviews.can_edit_reviewrequest')
+        return user.has_perm('reviews.can_edit_reviewrequest')
 
     def get_draft(self, user=None):
         """
@@ -1265,6 +1266,7 @@ class BaseComment(models.Model):
         (RESOLVED,  _('Resolved')),
         (DROPPED,   _('Dropped')),
     )
+    points_deducted = models.PositiveIntegerField(_("points deducted"), default=0)
     issue_opened = models.BooleanField(_("issue opened"), default=False)
     issue_status = models.CharField(_("issue status"),
                                     max_length=1,

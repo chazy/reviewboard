@@ -21,6 +21,13 @@
    <dd>
     <pre class="editable comment-editable" id="screenshot-comment-{{comment.id}}">{{comment.text|escape}}</pre>
 
+{% if comment.points_deducted == 0 %}
+    <div style="color: green;">0 points deducted</div>
+{% else %}
+    <div style="color: red;">{{comment.points_deducted}} points deducted</div>
+{% endif %}
+
+
 {% comment %}
     <!-- We'll want to do this eventually... Need to make it work in a
          non-instant-apply world. -->
@@ -72,6 +79,21 @@
    </dt>
    <dd>
     <pre class="editable comment-editable" id="diff-comment-{{comment.id}}">{{comment.text|escape}}</pre>
+    <div>
+        <span
+            {% if comment.points_deducted == 0 %}
+                style="color: green;"
+            {% else %}
+                style="color: red;"
+            {% endif %}
+            id="diff-points-{{comment.id}}" class="points-editable">
+            {{comment.points_deducted}} points deducted
+        </span>
+        &nbsp;&nbsp;
+        <a id="diff-points-less-{{comment.id}}" href="javascript:void();">Subtract less</a>
+        &nbsp;
+        <a id="diff-points-more-{{comment.id}}" href="javascript:void();">Subtract more</a>
+    </div>
 
 {% comment %}
     <!-- We'll want to do this eventually... Need to make it work in a
@@ -106,6 +128,15 @@
             editor.inlineEditor("startEdit");
         });
 
+        $("#diff-points-less-{{comment.id}}")
+            .pointsModifier(comment, -1,
+                            $("#diff-points-{{comment.id}}"),
+                            $("#review_draft_total_points"));
+        $("#diff-points-more-{{comment.id}}")
+            .pointsModifier(comment, 1,
+                            $("#diff-points-{{comment.id}}"),
+                            $("#review_draft_total_points"));
+
         queueLoadDiffFragment("review_draft_diff_comments", "{{comment.id}}",
 {% if comment.interfilediff %}
           "{{comment.filediff.id}}-{{comment.interfilediff.id}}"
@@ -120,6 +151,9 @@
  </div>
 
  <pre class="body-bottom editable">{{review.body_bottom}}</pre>
+ <div id="review_draft_total" style="font-weight: bold; color: {% if totalpoints == 0 %} green {% else %} red {% endif %};">
+    <span id="review_draft_total_points">{{totalpoints}}</span>
+    points deducted</div>
 {% endif %}
 
 </div>

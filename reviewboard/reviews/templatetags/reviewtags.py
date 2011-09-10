@@ -129,6 +129,7 @@ def commentcounts(context, filediff, interfilediff=None):
             comment_dict.setdefault(key, []).append({
                 'comment_id': comment.id,
                 'text': comment.text,
+                'points_deducted': comment.points_deducted,
                 'line': comment.first_line,
                 'num_lines': comment.num_lines,
                 'user': {

@@ -447,6 +447,18 @@ def review_detail(request,
         if status in (ReviewRequest.DISCARDED, ReviewRequest.SUBMITTED):
             close_description = latest_changedesc.text
 
+    # Hackish
+    for entry in entries:
+        total = 0
+        #print "\n\n\n"
+        #print str(type(entries))
+        #print "\n\n\n"
+        if "review" in entry:
+            for comment in entry["review"].ordered_comments:
+                total = total + comment.points_deducted
+        entry["total_points_deducted"] = total
+
+
     response = render_to_response(
         template_name,
         RequestContext(request, _make_review_request_context(review_request, {
@@ -481,12 +493,17 @@ def review_draft_inline_form(request,
 
     # This may be a brand new review. If so, we don't have a review object.
     if review:
+        totalpoints = 0
         review.ordered_comments = \
             review.comments.order_by('filediff', 'first_line')
+        for comment in review.ordered_comments:
+            totalpoints += comment.points_deducted
+            
 
     return render_to_response(template_name, RequestContext(request, {
         'review_request': review_request,
         'review': review,
+        'totalpoints': totalpoints,
         'PRE_CREATION': PRE_CREATION,
     }))
 

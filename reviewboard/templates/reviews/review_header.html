@@ -35,7 +35,8 @@
 {% endifnotuserandperm %}
 </div>
 {%  else %}
-{%  ifuserorperm review_request.submitter "reviews.can_edit_reviewrequest" %}
+{# ifuserorperm review_request.submitter "reviews.can_edit_reviewrequest" #}
+{% ifuserorperm "root" "reviews.can_edit_reviewrequest" %}
 <div class="banner" id="draft-banner" style="display:none;">
 {%    if review_request.public %}
  <h1>{% trans "This review request is a draft." %}</h1>

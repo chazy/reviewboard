@@ -102,6 +102,11 @@
     </dt>
     <dd>
      <pre>{{comment.text|escape}}</pre>
+{% if comment.points_deducted == 0 %}
+    <div style="color: green;">0 points deducted</div>
+{% else %}
+    <div style="color: red;">{{comment.points_deducted}} points deducted</div>
+{% endif %}
 {% if comment.issue_opened %}
      <div id="comment-{{comment.id}}-issue" class="issue-indicator">
        {% comment_issue review_request_details comment "screenshot_comment" %}
@@ -132,6 +137,11 @@
     </dt>
     <dd>
      <pre>{{comment.text|escape}}</pre>
+{% if comment.points_deducted == 0 %}
+    <div style="color: green;">0 points deducted</div>
+{% else %}
+    <div style="color: red;">{{comment.points_deducted}} points deducted</div>
+{% endif %}
 {% if comment.issue_opened %}
      <div id="comment-{{comment.id}}-issue" class="issue-indicator">
        {% comment_issue review_request_details comment "file_attachment_comment" %}
@@ -171,6 +181,11 @@
     </dt>
     <dd>
      <pre class="reviewtext">{{comment.text|escape}}</pre>
+{% if comment.points_deducted == 0 %}
+    <div style="color: green;">0 points deducted</div>
+{% else %}
+    <div style="color: red;">{{comment.points_deducted}} points deducted</div>
+{% endif %}
 {% if comment.issue_opened %}
      <div id="comment-{{comment.id}}-issue" class="issue-indicator">
        {% comment_issue review_request_details comment "comment" %}
@@ -196,6 +211,7 @@
    <pre class="body_bottom reviewtext">{{entry.review.body_bottom|escape}}</pre>
    {% reply_section entry.review "" "body_bottom" "rcbb" %}
   {% endif %}
+   <div style="font-weight: bold; color: red;">{{entry.total_points_deducted}} total points deducted</div>
  </div><!-- body -->
 </div><!-- main -->
 {%   endbox %}

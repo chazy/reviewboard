@@ -1,5 +1,6 @@
 {% extends "base.html" %}
 {% load i18n %}
+{% load djblets_utils %}
 
 {% block jsconsts %}
 {{block.super}}
@@ -13,11 +14,17 @@
 {% block bodytag %}
 {{block.super}}
 
+{% ifnotuserandperm "root" "reviews.can_edit_reviewrequest" %}
+<div id="review-banner" style="display: none;">
+{% endifnotuserandperm %}
+{% ifuserorperm "root" "reviews.can_edit_reviewrequest" %}
 <div id="review-banner"{% if not review %} style="display: none;"{% endif %}>
+{% endifuserorperm %}
  <div class="banner">
   <h1>{% trans "You have a pending review." %}</h1>
   <input id="review-banner-edit" type="button" value="{% trans "Edit Review" %}" />
   <input id="review-banner-publish" type="button" value="{% trans "Publish" %}" />
+  <h1>{% trans "Students cannot submit reviews" %}</h1>
   <input id="review-banner-discard" type="button" value="{% trans "Discard" %}" />
  </div>
 </div>

@@ -218,15 +218,22 @@ $.extend(DiffCommentBlock.prototype, {
         var list = $("<ul/>");
 
         if (this.draftComment) {
+            var _tmp_cmt_text = '';
+            if (this.draftComment.points_deducted > 0)
+                _tmp_cmt_text = ' [-' + this.draftComment.points_deducted + ']';
+
             $("<li/>")
-                .text(this.draftComment.text.truncate())
+                .text(this.draftComment.text.truncate() + _tmp_cmt_text)
                 .addClass("draft")
                 .appendTo(list);
         }
 
         for (var i = 0; i < this.comments.length; i++) {
+            var _tmp_cmt_text = '';
+            if (this.comments[i].points_deducted > 0)
+                _tmp_cmt_text = ' [-' + this.comments[i].points_deducted + ']';
             $("<li/>")
-                .text(this.comments[i].text.truncate())
+                .text(this.comments[i].text.truncate() + _tmp_cmt_text)
                 .appendTo(list);
         }
 

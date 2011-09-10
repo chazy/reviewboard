@@ -9,6 +9,7 @@ RB.DiffComment = function(review, id, filediff, interfilediff, beginLineNum,
     this.beginLineNum = beginLineNum;
     this.endLineNum = endLineNum;
     this.text = "";
+    this.points_deducted = 0;
     this.issue_opened = true;
     this.issue_status = "";
     this.loaded = false;
@@ -58,6 +59,7 @@ $.extend(RB.DiffComment.prototype, {
                 var url;
                 var data = {
                     text: self.text,
+                    points_deducted: self.points_deducted,
                     issue_opened: self.issue_opened,
                     first_line: self.beginLineNum,
                     num_lines: self.getNumLines()
@@ -159,6 +161,7 @@ $.extend(RB.DiffComment.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.diff_comment.id;
         this.text = rsp.diff_comment.text;
+        this.points_deducted = rsp.diff_comment.points_deducted;
         this.beginLineNum = rsp.diff_comment.first_line;
         this.endLineNum = rsp.diff_comment.num_lines + this.beginLineNum - 1;
         this.links = rsp.diff_comment.links;
@@ -174,6 +177,7 @@ RB.DiffCommentReply = function(reply, id, reply_to_id) {
     this.id = id;
     this.reply = reply;
     this.text = "";
+    this.points_deducted = 0;
     this.reply_to_id = reply_to_id;
     this.loaded = false;
     this.url = null;
@@ -306,6 +310,7 @@ $.extend(RB.DiffCommentReply.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.diff_comment.id;
         this.text = rsp.diff_comment.text;
+        this.points_deducted = rsp.diff_comment.points_deducted;
         this.links = rsp.diff_comment.links;
         this.url = rsp.diff_comment.links.self.href;
         this.loaded = true;
@@ -1200,6 +1205,7 @@ RB.FileAttachmentCommentReply = function(reply, id, reply_to_id) {
     this.id = id;
     this.reply = reply;
     this.text = "";
+    this.points_deducted = 0;
     this.reply_to_id = reply_to_id;
     this.loaded = false;
     this.url = null;
@@ -1330,6 +1336,7 @@ $.extend(RB.FileAttachmentCommentReply.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.file_attachment_comment.id;
         this.text = rsp.file_attachment_comment.text;
+        this.points_deducted = rsp.diff_comment.points_deducted;
         this.links = rsp.file_attachment_comment.links;
         this.url = rsp.file_attachment_comment.links.self.href;
         this.loaded = true;
@@ -1505,6 +1512,7 @@ RB.ScreenshotComment = function(review, id, screenshot_id, x, y, width,
     this.width = width;
     this.height = height;
     this.text = "";
+    this.points_deducted = 0;
     this.issue_opened = true;
     this.issue_status = "";
     this.loaded = false;
@@ -1647,6 +1655,7 @@ $.extend(RB.ScreenshotComment.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.screenshot_comment.id;
         this.text = rsp.screenshot_comment.text;
+        this.points_deducted = rsp.screenshot_comment.points_deducted;
         this.x = rsp.screenshot_comment.x;
         this.y = rsp.screenshot_comment.y;
         this.width = rsp.screenshot_comment.w;
@@ -1665,6 +1674,7 @@ RB.FileAttachmentComment = function(review, id, file_attachment_id) {
     this.review = review;
     this.file_attachment_id = file_attachment_id;
     this.text = "";
+    this.points_deducted = 0;
     this.loaded = false;
     this.issue_opened = true;
     this.issue_status = "";
@@ -1814,6 +1824,7 @@ $.extend(RB.FileAttachmentComment.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.file_attachment_comment.id;
         this.text = rsp.file_attachment_comment.text;
+        this.points_deducted = rsp.file_attachment_comment.points_deducted;
         this.links = rsp.file_attachment_comment.links;
         this.url = rsp.file_attachment_comment.links.self.href;
         this.issue_opened = rsp.file_attachment_comment.issue_opened;
@@ -1827,6 +1838,7 @@ RB.ScreenshotCommentReply = function(reply, id, reply_to_id) {
     this.id = id;
     this.reply = reply;
     this.text = "";
+    this.points_deducted = 0;
     this.reply_to_id = reply_to_id;
     this.loaded = false;
     this.url = null;
@@ -1959,6 +1971,7 @@ $.extend(RB.ScreenshotCommentReply.prototype, {
     _loadDataFromResponse: function(rsp) {
         this.id = rsp.screenshot_comment.id;
         this.text = rsp.screenshot_comment.text;
+        this.points_deducted = rsp.screenshot_comment.points_deducted;
         this.links = rsp.screenshot_comment.links;
         this.url = rsp.screenshot_comment.links.self.href;
         this.loaded = true;

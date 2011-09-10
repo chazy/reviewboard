@@ -879,7 +879,7 @@ $.fn.floatReplyDraftBanner = function() {
  * @return {jQuery} This jQuery.
  */
 $.fn.commentDlg = function() {
-    var DIALOG_TOTAL_HEIGHT = 250;
+    var DIALOG_TOTAL_HEIGHT = 275;
     var SLIDE_DISTANCE = 10;
     var COMMENTS_BOX_WIDTH = 280;
     var FORM_BOX_WIDTH = 380;
@@ -919,9 +919,39 @@ $.fn.commentDlg = function() {
     var saveButton = $("#comment_save", this)
         .click(function() {
             comment.setText(textField.val());
+            comment.points_deducted += Number(pointsField.val());
             comment.issue_opened = issueField.attr('checked') ? 1 : 0;
             comment.save();
             self.close();
+        });
+
+    var pointsField = $("#comment_points_deducted", draftForm)
+        .keypress(function(e) {
+            var charCode = (e.which) ? e.which : event.keyCode
+            if (charCode > 31 && (charCode < 48 || charCode > 57))
+                return false;
+
+            self.setDirty(true);
+            return true;
+        })
+        .change(function(e) {
+            if ($(this).val() == '') {
+                $(this).val(0);
+            }
+        });
+
+    var subtractButton = $("#comment_subtract", draftForm)
+        .click(function() {
+            pointsField.val(Number(pointsField.val()) + 1);
+            self.setDirty(true);
+            saveButton.attr("disabled", textField.val() == "");
+        });
+
+    var resetPtsButton = $("#comment_resetpts", draftForm)
+        .click(function() {
+            pointsField.val(0); 
+            self.setDirty(true);
+            saveButton.attr("disabled", textField.val() == "");
         });
 
     var textField    = $("#comment_text", draftForm)
@@ -1164,6 +1194,11 @@ $.fn.commentDlg = function() {
                   '&reply_type=' + replyType + '">Reply</a>')
                     .appendTo(actions);
                 $("<pre/>").appendTo(item).text(this.text);
+		if (this.points_deducted > 0) {
+			$('<div style="color: red"/>')
+				.appendTo(item).text("Points deducted: " +
+							this.points_deducted);
+		}
 
                 if (this.issue_opened) {
                     var interactive = window['gEditable'];
@@ -1234,6 +1269,8 @@ $.fn.commentDlg = function() {
 
         comment.ready(function() {
             textField.val(comment.text);
+            pointsField.val(comment.points_deducted);
+            
             issueField.attr('checked', comment.issue_opened)
 
             self.setDirty(false);
@@ -1288,6 +1325,7 @@ $.fn.commentDlg = function() {
                     buttons.outerHeight(true) -
                     statusField.height() -
                     issueOptions.height() -
+		    25 -
                     textField.getExtents("bmp", "b"));
 
         return this;
@@ -1423,6 +1461,14 @@ $.reviewForm = function(review) {
             }
         });
 
+        $(".points-editable", dlg).each(function() {
+            var editable = $(this);
+
+            if (editable.data('dirty')) {
+                editable.trigger('savePoints');
+            }
+        });
+
         $.funcQueue("reviewForm").add(function() {
             review.ship_it = $("#id_shipit", dlg)[0].checked ? 1 : 0;
             review.body_top = $(".body-top", dlg).text();;
@@ -1498,6 +1544,42 @@ $.fn.reviewFormCommentEditor = function(comment) {
         });
 };
 
+$.fn.pointsModifier = function(comment, val, points_span, total_span) {
+    var self = this;
+
+    points_span.data('dirty', false);
+
+    /* Register to save the comment when the points have been modified */
+    points_span.bind("savePoints", function() {
+            comment.save();
+            points_span.data('dirty', false);
+    });
+
+    /* Do the modification of the points field */
+    return this
+        .click(function() {
+            comment.points_deducted += val;
+            if (comment.points_deducted < 0) {
+                comment.points_deducted = 0;
+            } else {
+                points_span.data('dirty', true);
+		var prev_total = Number(total_span.text());
+		total_span.text(prev_total + val);
+		if (prev_total + val == 0)
+			$("#review_draft_total").css('color', 'green');
+		else
+			$("#review_draft_total").css('color', 'red');
+            }
+
+            if (comment.points_deducted == 0) {
+               points_span.css('color', 'green'); 
+            } else {
+               points_span.css('color', 'red'); 
+            }
+            
+            points_span.text(comment.points_deducted + ' points deducted');
+        });
+};
 
 /*
  * Adds inline editing capabilities to close description for a review request
@@ -1736,7 +1818,7 @@ $.fn.fileAttachment = function() {
                     createDraftComment();
 
                     gCommentDlg
-                        .setDraftComment(draftComment)
+                        .etDraftComment(draftComment)
                         .setCommentsList(comments, "file_attachment_comment")
                         .positionToSide(addCommentButton, {
                             side: 'b',
@@ -1759,7 +1841,8 @@ $.fn.fileAttachment = function() {
                     var comment = attachmentComments[i];
 
                     if (comment.localdraft) {
-                        createDraftComment(comment.comment_id, comment.text);
+                        createDraftComment(comment.comment_id, comment.text,
+                                           comment.points_deducted);
                     } else {
                         comments.push(comment);
                     }
@@ -1769,7 +1852,7 @@ $.fn.fileAttachment = function() {
             commentsProcessed = true;
         }
 
-        function createDraftComment(commentID, text) {
+        function createDraftComment(commentID, text, points_deducted) {
             if (draftComment != null) {
                 return;
             }
@@ -1782,6 +1865,8 @@ $.fn.fileAttachment = function() {
             if (text) {
                 draftComment.text = text;
             }
+
+            draftComment.points_deducted = points_deducted;
 
             $.event.add(draftComment, "saved", function() {
                 showReviewBanner();

@@ -274,6 +274,10 @@ class BaseDiffCommentResource(BaseCommentResource):
             'type': str,
             'description': 'The comment text.',
         },
+        'points_deducted': {
+            'type': int,
+            'description': 'Number of points deducted by the comment.',
+        },
         'filediff': {
             'type': 'reviewboard.webapi.resources.FileDiffResource',
             'description': 'The per-file diff that the comment was made on.',
@@ -459,6 +463,10 @@ class ReviewDiffCommentResource(BaseDiffCommentResource):
                 'type': str,
                 'description': 'The comment text.',
             },
+            'points_deducted': {
+                'type': int,
+                'description': 'Number of points deducted by the comment.',
+            },
         },
         optional = {
             'interfilediff_id': {
@@ -472,7 +480,7 @@ class ReviewDiffCommentResource(BaseDiffCommentResource):
             },
         },
     )
-    def create(self, request, first_line, num_lines, text,
+    def create(self, request, first_line, num_lines, text, points_deducted,
                filediff_id, issue_opened=False, interfilediff_id=None, *args,
                **kwargs):
         """Creates a new diff comment.
@@ -523,6 +531,7 @@ class ReviewDiffCommentResource(BaseDiffCommentResource):
         new_comment = self.model(filediff=filediff,
                                  interfilediff=interfilediff,
                                  text=text,
+                                 points_deducted=points_deducted,
                                  first_line=first_line,
                                  num_lines=num_lines,
                                  issue_opened=bool(issue_opened))
@@ -557,6 +566,10 @@ class ReviewDiffCommentResource(BaseDiffCommentResource):
             'text': {
                 'type': str,
                 'description': 'The comment text.',
+            },
+            'points_deducted': {
+                'type': int,
+                'description': 'Number of points deducted by the comment.',
             },
             'issue_opened': {
                 'type': bool,
@@ -596,7 +609,7 @@ class ReviewDiffCommentResource(BaseDiffCommentResource):
         if not diff_comment.issue_opened and kwargs.get('issue_opened', False):
             diff_comment.issue_status = BaseComment.OPEN
 
-        for field in ('text', 'first_line', 'num_lines', 'issue_opened'):
+        for field in ('text', 'points_deducted', 'first_line', 'num_lines', 'issue_opened'):
             value = kwargs.get(field, None)
 
             if value is not None:

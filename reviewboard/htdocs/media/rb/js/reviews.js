@@ -953,7 +953,7 @@ $.fn.commentDlg = function() {
         .click(function() {
             pointsField.val(0); 
             self.setDirty(true);
-            saveButton.attr("disabled", false) == "");
+            saveButton.attr("disabled", false);
         });
 
     var textField    = $("#comment_text", draftForm)

@@ -5737,7 +5737,14 @@ class ReviewRequestResource(WebAPIResource):
             try:
                 user = User.objects.get(username=submit_as)
             except User.DoesNotExist:
-                return INVALID_USER
+                user = None
+                for backend in auth.get_backends():
+                    try:
+                        user = backend.get_or_create_user(submit_as)
+                    except:
+                        pass
+                if not user:
+                    return INVALID_USER
 
         try:
             try:

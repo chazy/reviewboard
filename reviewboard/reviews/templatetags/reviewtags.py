@@ -123,7 +123,8 @@ def commentcounts(context, filediff, interfilediff=None):
     for comment in query:
         review = get_object_or_none(comment.review)
 
-        if review and (review.public or review.user == user):
+        if review and (review.public or review.user == user) and \
+           (review.is_accessible_by(user)):
             key = (comment.first_line, comment.num_lines)
 
             comment_dict.setdefault(key, []).append({

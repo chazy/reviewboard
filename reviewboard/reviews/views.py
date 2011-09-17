@@ -264,6 +264,7 @@ def new_review_request(request,
 
 
 @check_login_required
+
 def review_detail(request,
                   review_request_id,
                   local_site_name=None,

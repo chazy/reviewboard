@@ -1,5 +1,6 @@
 import os
 import re
+import logging
 from datetime import datetime
 
 from django.contrib.auth.models import User
@@ -485,21 +486,26 @@ class ReviewRequest(models.Model):
             being a member of an invite-only group, or the group being public).
         """
         if not self.public and not self.is_mutable_by(user):
+            logging.debug("not self.public and not self.is_mut...")
             return False
 
         if self.repository and not self.repository.is_accessible_by(user):
+            logging.debug("self.repository and not self.repository.is_acce...")
             return False
 
         if local_site and not local_site.is_accessible_by(user):
+            logging.debug("local_site and not local_site.is_acc")
             return False
 
         if (user.is_authenticated() and
             self.target_people.filter(pk=user.pk).count() > 0):
+            logging.debug("is_auth and self in target_people")
             return True
 
         groups = list(self.target_groups.all())
 
         if not groups:
+            logging.debug("not groups, huh...")
             return True
 
         # We specifically iterate over these instead of making it part
@@ -511,8 +517,10 @@ class ReviewRequest(models.Model):
         # to the review request.
         for group in groups:
             if group.is_accessible_by(user):
+                logging.debug("group.is_accessible_by(user)")
                 return True
 
+        logging.debug("final result, False")
         return False
 
     def is_mutable_by(self, user):

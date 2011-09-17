@@ -283,7 +283,7 @@ def review_detail(request,
     if not review_request:
         return response
 
-    reviews = review_request.get_public_reviews()
+    reviews = review_request.get_public_reviews(request.user)
     review = review_request.get_pending_review(request.user)
     review_timestamp = 0
     last_visited = 0

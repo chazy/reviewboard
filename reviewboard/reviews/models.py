@@ -394,9 +394,11 @@ class ReviewRequest(models.Model):
                 try:
                     visit = query[0]
 
-                    return self.reviews.filter(
-                        public=True,
-                        timestamp__gt=visit.timestamp).exclude(user=user)
+                    return [review for review in
+                        self.reviews.filter(
+                            public=True,
+                            timestamp__gt=visit.timestamp).exclude(user=user)
+                        if review.is_accessible_by(user)]
                 except IndexError:
                     # This visit doesn't exist, so bail.
                     pass
@@ -455,11 +457,13 @@ class ReviewRequest(models.Model):
 
     display_id = property(get_display_id)
 
-    def get_public_reviews(self):
+    def get_public_reviews(self, request_user):
         """
         Returns all public top-level reviews for this review request.
         """
-        return self.reviews.filter(public=True, base_reply_to__isnull=True)
+        return [review for review in
+            self.reviews.filter(public=True, base_reply_to__isnull=True)
+            if review.is_accessible_by(request_user)]
 
     def update_from_changenum(self, changenum):
         """
@@ -486,26 +490,21 @@ class ReviewRequest(models.Model):
             being a member of an invite-only group, or the group being public).
         """
         if not self.public and not self.is_mutable_by(user):
-            logging.debug("not self.public and not self.is_mut...")
             return False
 
         if self.repository and not self.repository.is_accessible_by(user):
-            logging.debug("self.repository and not self.repository.is_acce...")
             return False
 
         if local_site and not local_site.is_accessible_by(user):
-            logging.debug("local_site and not local_site.is_acc")
             return False
 
         if (user.is_authenticated() and
             self.target_people.filter(pk=user.pk).count() > 0):
-            logging.debug("is_auth and self in target_people")
             return True
 
         groups = list(self.target_groups.all())
 
         if not groups:
-            logging.debug("not groups, huh...")
             return True
 
         # We specifically iterate over these instead of making it part
@@ -517,10 +516,21 @@ class ReviewRequest(models.Model):
         # to the review request.
         for group in groups:
             if group.is_accessible_by(user):
-                logging.debug("group.is_accessible_by(user)")
                 return True
 
-        logging.debug("final result, False")
+        # If the submitter of the review belongs to a review group, to which
+        # the current user also belongs, then we allow them to see the review
+        # request.
+        for group in Group.objects.accessible(self.submitter):
+            if group.is_accessible_by(user):
+                return True
+
+        # If the user submitted the review request (or it was submitted as the
+        # user) then it should obviously be OK for the user to see the review
+        # request.
+        if self.submitter == user:
+            return True
+
         return False
 
     def is_mutable_by(self, user):
@@ -1648,6 +1658,31 @@ class Review(models.Model):
         else:
             review_published.send(sender=self.__class__,
                                   user=user, review=self)
+
+    def is_accessible_by(self, user):
+        """
+        This is a specific feature for using ReviewBoard as a grading tool
+        where we let all students see all review requests, but only let the
+        TAs and the students who submitted the review requests see the
+        reviews themselves.
+
+        Should probably be named something or contained in some module that
+        extends the model with an appropriate name, but that is for later...
+        """
+
+        # Obviously, the user who created the review request can see the
+        # reviews.
+        if (self.review_request.submitter == user):
+            return True
+
+        # If the requesting user is part of a review group that the user who
+        # created the review is also a part of, then we let them see the
+        # review.
+        for group in Group.objects.accessible(self.user):
+            if group.is_accessible_by(user):
+                return True
+
+        return False
 
     def delete(self):
         """

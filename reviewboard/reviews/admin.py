@@ -45,13 +45,13 @@ class DefaultReviewerAdmin(admin.ModelAdmin):
 class GroupAdmin(admin.ModelAdmin):
     form = GroupForm
     list_display = ('name', 'display_name', 'mailing_list', 'invite_only',
-                    'visible')
+                    'visible', 'ready_for_reviews')
     filter_horizontal = ('users',)
 
     fieldsets = (
         (_('General Information'), {
             'fields': ('name', 'display_name', 'mailing_list',
-                       'visible'),
+                       'visible', 'ready_for_reviews'),
         }),
         (_('Access Control'), {
             'fields': ('invite_only', 'users', 'local_site'),

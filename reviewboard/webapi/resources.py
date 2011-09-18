@@ -2051,6 +2051,13 @@ class ReviewGroupResource(WebAPIResource):
                            'who are not members. This does not prevent users '
                            'from accessing the group if they know it, though.',
         },
+        'ready_for_reviews': {
+            'type': bool,
+            'description': 'Whether or not members of the group can see '
+                           'published reviews. If a user is a member of a '
+                           'single group where this is not set, then the '
+                           'cannot see any reviews.',
+        },
     }
 
     item_child_resources = [

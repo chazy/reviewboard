@@ -100,6 +100,7 @@ class Group(models.Model):
 
     invite_only = models.BooleanField(_('invite only'), default=False)
     visible = models.BooleanField(default=True)
+    ready_for_reviews = models.BooleanField(default=False)
 
     objects = ReviewGroupManager()
 
@@ -1669,6 +1670,15 @@ class Review(models.Model):
         Should probably be named something or contained in some module that
         extends the model with an appropriate name, but that is for later...
         """
+
+        # There's a master switch on the review groups called
+        # ready_for_reviews. The idea is that if a user is a member of a group
+        # that doesn't have this switch set, then they can simply not see
+        # reviews. This is a way for TAs to publish reviews and let all the
+        # students see their reviews at once.
+        for group in Group.objects.accessible(user):
+            if not group.ready_for_reviews:
+                return False
 
         # Obviously, the user who created the review request can see the
         # reviews.

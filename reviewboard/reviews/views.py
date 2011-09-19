@@ -493,8 +493,8 @@ def review_draft_inline_form(request,
     review = review_request.get_pending_review(request.user)
 
     # This may be a brand new review. If so, we don't have a review object.
+    totalpoints = 0
     if review:
-        totalpoints = 0
         review.ordered_comments = \
             review.comments.order_by('filediff', 'first_line')
         for comment in review.ordered_comments:

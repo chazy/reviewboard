@@ -932,6 +932,9 @@ $.fn.commentDlg = function() {
                 return false;
 
             self.setDirty(true);
+	    if (textField.val() == "")
+	    	textField.val(" ");
+            saveButton.attr("disabled", false);
             return true;
         })
         .change(function(e) {
@@ -939,6 +942,8 @@ $.fn.commentDlg = function() {
                 $(this).val(0);
             }
             self.setDirty(true);
+	    if (textField.val() == "")
+	    	textField.val(" ");
             saveButton.attr("disabled", false);
         });
 
@@ -946,12 +951,16 @@ $.fn.commentDlg = function() {
         .click(function() {
             pointsField.val(Number(pointsField.val()) + 1);
             self.setDirty(true);
+	    if (textField.val() == "")
+	    	textField.val(" ");
             saveButton.attr("disabled", false);
         });
 
     var resetPtsButton = $("#comment_resetpts", draftForm)
         .click(function() {
             pointsField.val(0); 
+	    if (textField.val() == "")
+	    	textField.val(" ");
             self.setDirty(true);
             saveButton.attr("disabled", false);
         });

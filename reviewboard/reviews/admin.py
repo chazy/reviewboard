@@ -62,6 +62,9 @@ class GroupAdmin(admin.ModelAdmin):
         }),
     )
 
+def ReviewAdminPublish(modeladmin, request, queryset):
+    queryset.update(public=True)
+ReviewAdminPublish.short_description = "Mark selected reviews as published"
 
 class ReviewAdmin(admin.ModelAdmin):
     list_display = ('review_request', 'user', 'public', 'ship_it',
@@ -72,6 +75,8 @@ class ReviewAdmin(admin.ModelAdmin):
                      'body_top_reply_to', 'body_bottom_reply_to',
                      'comments', 'screenshot_comments',
                      'file_attachment_comments', 'reviewed_diffset')
+    actions = [ReviewAdminPublish]
+
     fieldsets = (
         (_('General Information'), {
             'fields': ('user', 'review_request', 'public', 'ship_it',

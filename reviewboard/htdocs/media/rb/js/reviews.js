@@ -1830,7 +1830,7 @@ $.fn.fileAttachment = function() {
                     createDraftComment();
 
                     gCommentDlg
-                        .etDraftComment(draftComment)
+                        .setDraftComment(draftComment)
                         .setCommentsList(comments, "file_attachment_comment")
                         .positionToSide(addCommentButton, {
                             side: 'b',
